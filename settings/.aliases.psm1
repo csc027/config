@@ -55,6 +55,13 @@ function Invoke-GitStashShowNameOnly { git stash show $args }
 function Invoke-GitStashUntracked { git stash -u $args }
 function Invoke-GitStatus { git status $args }
 function Invoke-GitTag { git tag $args }
+function Invoke-Neovim {
+	if (($args.Count -gt 0) -and ($args[0] -notlike '-*')) {
+		nvim +"n $($args[0])" ($args | Select-Object -Skip 1);
+	} else {
+		nvim $args;
+	}
+}
 
 $Aliases = @{
 	'ga' = 'Invoke-GitAdd';
@@ -114,6 +121,7 @@ $Aliases = @{
 	'gv' = 'Invoke-GitMv';
 	'gw' = 'Invoke-GitShow';
 	'gwu' = 'Invoke-GitShowUpstreamBranches';
+	'nvim' = 'Invoke-Neovim';
 };
 
 foreach ($Key in $Aliases.Keys) {
