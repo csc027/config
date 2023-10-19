@@ -56,23 +56,8 @@ function Invoke-GitStashUntracked { git stash -u $args }
 function Invoke-GitStatus { git status $args }
 function Invoke-GitTag { git tag $args }
 function Invoke-Neovim {
+	$MultislotArgument = @('--startuptime', '-c', '--cmd', '-S', '-l', '-ll', '-u', '-i', '-s', '-w', '-w', '-W', '--listen');
 	for ($i = 0; $i -lt $args.Count; $i++) {
-		$MultislotArgument = @(
-			'--startuptime',
-			'-c',
-			'--cmd',
-			'-S',
-			'-l',
-			'-ll',
-			'-u',
-			'-i',
-			'-s',
-			'-w',
-			'-w',
-			'-W',
-			'--listen'
-		);
-
 		if ($args[$i] -in $MultislotArgument) {
 			# Skip the next argument if this flag is a multislot argument
 			$i++;
