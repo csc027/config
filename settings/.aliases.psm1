@@ -85,7 +85,7 @@ function Invoke-Neovim {
 		) {
 			# If a glob/tilde is detected, wrap the glob/tilde value with a
 			# :next command execution
-			$args[$i] = "+`"n $($args[$i])`"";
+			$args[$i] = "+n $($args[$i])";
 		}
 	}
 
