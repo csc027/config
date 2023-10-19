@@ -56,11 +56,40 @@ function Invoke-GitStashUntracked { git stash -u $args }
 function Invoke-GitStatus { git status $args }
 function Invoke-GitTag { git tag $args }
 function Invoke-Neovim {
-	if (($args.Count -gt 0) -and ($args[0] -notlike '-*')) {
-		nvim +"n $($args[0])" ($args | Select-Object -Skip 1);
-	} else {
-		nvim $args;
+	for ($i = 0; $i -lt $args.Count; $i++) {
+		$MultislotArgument = @(
+			'--startuptime',
+			'-c',
+			'--cmd',
+			'-S',
+			'-l',
+			'-ll',
+			'-u',
+			'-i',
+			'-s',
+			'-w',
+			'-w',
+			'-W',
+			'--listen'
+		);
+
+		if ($args[$i] -in $MultislotArgument) {
+			# Skip the next argument if this flag is a multislot argument
+			$i++;
+		} elseif (
+			$args[$i] -notlike '-*' -and
+			$args[$i] -notlike '+*' -and (
+				$args[$i] -like '*`**' -or
+				$args[$i] -like '~*'
+			)
+		) {
+			# If a glob/tilde is detected, wrap the glob/tilde value with a
+			# :next command execution
+			$args[$i] = "+`"n $($args[$i])`"";
+		}
 	}
+
+	nvim.exe $args;
 }
 
 $Aliases = @{
