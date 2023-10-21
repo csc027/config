@@ -36,22 +36,32 @@ local on_attach = function(client, bufnr)
 	vim.keymap.set('n', '<Leader>td', vim.lsp.buf.type_definition, bufopts)
 end
 
-require('lspconfig')['omnisharp'].setup {
-	on_attach = on_attach,
-	flags = { debounce_text_changes = 150 },
-	cmd = { },
-	handlers = { ["textDocument/definition"] = require('omnisharp_extended').handler },
-	enable_editorconfig_support = true,
-	enable_ms_build_load_projects_on_demand = false,
-	enable_roslyn_analyzers = true,
-	organize_imports_on_format = true,
-	enable_import_completion = true,
-	sdk_include_prereleases = true,
-	analyze_open_documents_only = false
-}
+local omnisharp_path = ''
+if (omnisharp_path ~= nil and omnisharp_path ~= '') then
+	require('lspconfig')['omnisharp'].setup {
+		on_attach = on_attach,
+		flags = { debounce_text_changes = 150 },
+		cmd = { 'dotnet', omnisharp_path },
+		handlers = { ['textDocument/definition'] = require('omnisharp_extended').handler },
+		enable_editorconfig_support = true,
+		enable_ms_build_load_projects_on_demand = false,
+		enable_roslyn_analyzers = true,
+		organize_imports_on_format = true,
+		enable_import_completion = true,
+		sdk_include_prereleases = true,
+		analyze_open_documents_only = false
+	}
+end
 
-require('lspconfig')['powershell_es'].setup {
-	bundle_path = '',
-	on_attach = on_attach,
-	settings = { powershell = { scriptAnalysis = { settingsPath = '' } } }
-}
+local powershell_es_bundle_path = ''
+local psscriptanalyzer_settings_path = ''
+if (
+	powershell_es_bundle_path ~= nil and powershell_es_bundle_path ~= '' and
+	psscriptanalyzer_settings_path ~= nil and psscriptanalyzer_settings_path ~= ''
+) then
+	require('lspconfig')['powershell_es'].setup {
+		bundle_path = powershell_es_bundle_path,
+		on_attach = on_attach,
+		settings = { powershell = { scriptAnalysis = { settingsPath = psscriptanalyzer_settings_path } } }
+	}
+end
