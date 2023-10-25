@@ -57,24 +57,33 @@ function Invoke-GitStatus { git status $args }
 function Invoke-GitTag { git tag $args }
 function Invoke-Neovim {
 	$MultislotArgument = @('--startuptime', '-c', '--cmd', '-S', '-l', '-ll', '-u', '-i', '-s', '-w', '-w', '-W', '--listen');
+	$ArgumentList = @();
 	for ($i = 0; $i -lt $args.Count; $i++) {
-		if ($args[$i] -in $MultislotArgument) {
-			# Skip the next argument if this flag is a multislot argument
-			$i++;
-		} elseif (
-			$args[$i] -notlike '-*' -and
-			$args[$i] -notlike '+*' -and (
-				$args[$i] -like '*`**' -or
-				$args[$i] -like '~*'
-			)
-		) {
-			# If a glob/tilde is detected, wrap the glob/tilde value with a
-			# :next command execution
-			$args[$i] = "+n $($args[$i])";
+		if ($args[$i] -is [string]) {
+			if ($args[$i] -in $MultislotArgument) {
+				# Skip the next argument if this flag is a multislot argument
+				$ArgumentList += @($args[$i++]) + @($args[$i]);
+			} elseif (
+				$args[$i] -notlike '-*' -and
+				$args[$i] -notlike '+*' -and (
+					$args[$i] -like '*`**' -or
+					$args[$i] -like '~*'
+				)
+			) {
+				# If a glob/tilde is detected, wrap the glob/tilde value with a
+				# :next command execution
+				$ArgumentList += @("+n $($args[$i])");
+			} else {
+				$ArgumentList += @($args[$i]);
+			}
+		} elseif ($args[$i] -is [Array]) {
+			$ArgumentList += @($args[$i]);
+		} else {
+			$ArgumentList += @($args[$i]);
 		}
 	}
 
-	nvim.exe $args;
+	nvim.exe $ArgumentList;
 }
 
 $Aliases = @{
