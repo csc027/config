@@ -70,9 +70,8 @@ function Invoke-Neovim {
 					$args[$i] -like '~*'
 				)
 			) {
-				# If a glob/tilde is detected, wrap the glob/tilde value with a
-				# :next command execution
-				$ArgumentList += @("+n $($args[$i])");
+				# Trigger a recursive search if a recursive wildcard is detected
+				$ArgumentList += @(Get-ChildItem -Path $args[$i] -Recurse:($args[$i] -like '*`*`**'));
 			} else {
 				$ArgumentList += @($args[$i]);
 			}
